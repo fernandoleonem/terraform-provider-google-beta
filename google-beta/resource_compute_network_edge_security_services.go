@@ -1,23 +1,19 @@
 package google
 
 import (
-	"context"
 	"fmt"
 	"log"
-
 	"time"
-
 	"github.com/hashicorp/errwrap"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	compute "google.golang.org/api/compute/v0.beta"
 )
 
 func resourceComputeNetworkEdgeSecurityServices() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceComputeNetworkEdgeSecurityServicesCreate,
-		Read:   resourceComputeSecurityPolicyRead,
-		Update: resourceComputeSecurityPolicyUpdate,
+		Read:   resourceComputeNetworkEdgeSecurityServicesRead,
+		Update: resourceComputeNetworkEdgeSecurityServicesUpdate,
 		Delete: resourceComputeNetworkEdgeSecurityServicesDelete,
 
 		Importer: &schema.ResourceImporter{
@@ -56,8 +52,6 @@ func resourceComputeNetworkEdgeSecurityServices() *schema.Resource {
 				Optional:    true,
 				Description: `The resource URL for the network edge security service associated with this network edge security service.`,
 			},
-
-
 		},
 
 		UseJSONNumber: true,
@@ -77,14 +71,15 @@ func resourceComputeNetworkEdgeSecurityServicesCreate(d *schema.ResourceData, me
 		return err
 	}
 
+	region, err := getRegion(d, config)
+	if err != nil {
+		return err
+	}
+
 	sp := d.Get("name").(string)
 	networkEdgeSecurityServices := &compute.NetworkEdgeSecurityService{
 		Name:        sp,
 		Description: d.Get("description").(string),
-	}
-
-	if v, ok := d.GetOk("fingerprint"); ok {
-		networkEdgeSecurityServices.Fingerprint = v.(string)
 	}
 
 	if v, ok := d.GetOk("security_policy"); ok {
@@ -95,7 +90,7 @@ func resourceComputeNetworkEdgeSecurityServicesCreate(d *schema.ResourceData, me
 
 	client := config.NewComputeClient(userAgent)
 
-	op, err := client.NetworkEdgeSecurityServices.Insert(project, d.Get("region").(string), networkEdgeSecurityServices).Do()
+	op, err := client.NetworkEdgeSecurityServices.Insert(project, region, networkEdgeSecurityServices).Do()
 
 	if err != nil {
 		return errwrap.Wrapf("Error creating NetworkEdgeSecurityService: {{err}}", err)
@@ -113,9 +108,100 @@ func resourceComputeNetworkEdgeSecurityServicesCreate(d *schema.ResourceData, me
 	}
 
 	return resourceComputeSecurityPolicyRead(d, meta)
-
-
 }
+
+func resourceComputeNetworkEdgeSecurityServicesRead(d *schema.ResourceData, meta interface{}) error {
+	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
+	project, err := getProject(d, config)
+	if err != nil {
+		return err
+	}
+
+	region, err := getRegion(d, config)
+	if err != nil {
+		return err
+	}
+
+	sp := d.Get("name").(string)
+
+	client := config.NewComputeClient(userAgent)
+
+	networkEdgeSecurityServices, err := client.NetworkEdgeSecurityServices.Get(project, region, sp).Do()
+	if err != nil {
+		return handleNotFoundError(err, d, fmt.Sprintf("NetworkEdgeSecurityServices %q", d.Id()))
+	}
+
+	if err := d.Set("name", networkEdgeSecurityServices.Name); err != nil {
+		return fmt.Errorf("Error setting name: %s", err)
+	}
+	if err := d.Set("description", networkEdgeSecurityServices.Description); err != nil {
+		return fmt.Errorf("Error setting description: %s", err)
+	}
+	if err := d.Set("fingerprint", networkEdgeSecurityServices.Fingerprint); err != nil {
+		return fmt.Errorf("Error setting fingerprint: %s", err)
+	}
+	if err := d.Set("security_policy", networkEdgeSecurityServices.SecurityPolicy); err != nil {
+		return fmt.Errorf("Error setting security policy: %s", err)
+	}
+
+	return nil
+}
+
+func resourceComputeNetworkEdgeSecurityServicesUpdate(d *schema.ResourceData, meta interface{}) error {
+	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
+	project, err := getProject(d, config)
+	if err != nil {
+		return err
+	}
+
+	region, err := getRegion(d, config)
+	if err != nil {
+		return err
+	}
+
+	sp := d.Get("name").(string)
+
+	networkEdgeSecurityServices := &compute.NetworkEdgeSecurityService{
+		Fingerprint: d.Get("fingerprint").(string),
+	}
+
+	if d.HasChange("description") {
+		networkEdgeSecurityServices.Description = d.Get("description").(string)
+		networkEdgeSecurityServices.ForceSendFields = append(networkEdgeSecurityServices.ForceSendFields, "Description")
+	}
+
+	if d.HasChange("security_policy") {
+		networkEdgeSecurityServices.SecurityPolicy = d.Get("security_policy").(string)
+		networkEdgeSecurityServices.ForceSendFields = append(networkEdgeSecurityServices.ForceSendFields, "SecurityPolicy")
+	}
+
+	if len(networkEdgeSecurityServices.ForceSendFields) > 0 {
+		client := config.NewComputeClient(userAgent)
+
+		op, err := client.NetworkEdgeSecurityServices.Patch(project, region, sp, networkEdgeSecurityServices).Do()
+
+		if err != nil {
+			return errwrap.Wrapf(fmt.Sprintf("Error updating NetworkEdgeSecurityServices %q: {{err}}", sp), err)
+		}
+
+		err = computeOperationWaitTime(config, op, project, fmt.Sprintf("Updating NetworkEdgeSecurityServices %q", sp), userAgent, d.Timeout(schema.TimeoutUpdate))
+		if err != nil {
+			return err
+		}
+	}
+
+	return resourceComputeNetworkEdgeSecurityServicesRead(d, meta)
+}	
 
 func resourceComputeNetworkEdgeSecurityServicesDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
@@ -129,10 +215,15 @@ func resourceComputeNetworkEdgeSecurityServicesDelete(d *schema.ResourceData, me
 		return err
 	}
 
+	region, err := getRegion(d, config)
+	if err != nil {
+		return err
+	}
+
 	client := config.NewComputeClient(userAgent)
 
 	// Delete the SecurityPolicy
-	op, err := client.NetworkEdgeSecurityServices.Delete(project, d.Get("region").(string), d.Get("name").(string)).Do()
+	op, err := client.NetworkEdgeSecurityServices.Delete(project, region, d.Get("name").(string)).Do()
 	if err != nil {
 		return errwrap.Wrapf("Error deleting NetworkEdgeSecurityServices: {{err}}", err)
 	}
