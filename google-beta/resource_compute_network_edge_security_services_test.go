@@ -24,7 +24,7 @@ func TestAccComputeNetworkEdgeSecurityServices_basic(t *testing.T) {
 				Config: testAccComputeNetworkEdgeSecurityServices_basic(spName),
 			},
 			{
-				ResourceName:      "google_compute_security_policy.policy",
+				ResourceName:      "google_compute_network_edge_security_services.services",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
