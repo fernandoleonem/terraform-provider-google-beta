@@ -58,7 +58,9 @@ func resourceComputeSecurityPolicy() *schema.Resource {
 				Optional:     true,
 				Computed:     true,
 				Description:  `The type indicates the intended use of the security policy. CLOUD_ARMOR - Cloud Armor backend security policies can be configured to filter incoming HTTP requests targeting backend services. They filter requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud Armor edge security policies can be configured to filter incoming HTTP requests targeting backend services (including Cloud CDN-enabled) as well as backend buckets (Cloud Storage). They filter requests before the request is served from Google's cache.`,
-				ValidateFunc: validation.StringInSlice([]string{"CLOUD_ARMOR", "CLOUD_ARMOR_EDGE", "CLOUD_ARMOR_INTERNAL_SERVICE"}, false),
+				//change
+				//SetFeature: Cloud Armor for NLB/VMs APIs (item c) -> insert CLOUD_ARMOR_NETWORK on enum
+				ValidateFunc: validation.StringInSlice([]string{"CLOUD_ARMOR", "CLOUD_ARMOR_EDGE", "CLOUD_ARMOR_INTERNAL_SERVICE", "CLOUD_ARMOR_NETWORK"}, false),
 			},
 
 			"rule": {
@@ -385,6 +387,8 @@ func resourceComputeSecurityPolicy() *schema.Resource {
 				Computed:    true,
 				Description: `The URI of the created resource.`,
 			},
+
+			//SetFeature: Cloud Armor for NLB/VMs APIs (item b) -> insert DdosProtectionConfig new object here
 
 			"advanced_options_config": {
 				Type:        schema.TypeList,
