@@ -975,6 +975,7 @@ func testAccComputeSecurityPolicy_withDdosProtectionConfig(spName string) string
 resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "default rule"
+  type = "CLOUD_ARMOR_NETWORK"
 
   ddos_protection_config {
     ddos_protection = "STANDARD"
