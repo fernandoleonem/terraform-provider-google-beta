@@ -32,7 +32,7 @@ func TestAccComputeSecurityPolicy_basic(t *testing.T) {
 }
 
 //Change
-func TestAccComputeSecurityPolicy_basicWithCloudArmorEdgeNetworkType(t *testing.T) {
+func TestAccComputeSecurityPolicy_basicWithCloudArmorNetworkType(t *testing.T) {
 	t.Parallel()
 
 	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
@@ -43,7 +43,7 @@ func TestAccComputeSecurityPolicy_basicWithCloudArmorEdgeNetworkType(t *testing.
 		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccComputeSecurityPolicy_basicWithCloudArmorEdgeNetworkType(spName),
+				Config: testAccComputeSecurityPolicy_basicWithCloudArmorNetworkType(spName),
 			},
 			{
 				ResourceName:      "google_compute_security_policy.policy",
@@ -182,7 +182,7 @@ func TestAccComputeSecurityPolicy_update(t *testing.T) {
 }
 
 //Change
-func TestAccComputeSecurityPolicy_withDdosProtectionConfig (t *testing.T) {
+func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 	t.Parallel()
 
 	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
@@ -526,12 +526,13 @@ resource "google_compute_security_policy" "policy" {
 }
 
 //Change
-func testAccComputeSecurityPolicy_basicWithCloudArmorEdgeNetworkType(spName string) string {
+func testAccComputeSecurityPolicy_basicWithCloudArmorNetworkType(spName string) string {
 	return fmt.Sprintf(`
 resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "basic security policy"
   type        = "CLOUD_ARMOR_NETWORK"
+  region = "es-central-1"
 }
 `, spName)
 }
@@ -976,6 +977,7 @@ resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "default rule"
   type = "CLOUD_ARMOR_NETWORK"
+  region = "es-central-1"
 
   ddos_protection_config {
     ddos_protection = "STANDARD"
