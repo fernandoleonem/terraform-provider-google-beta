@@ -977,7 +977,6 @@ resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "default rule"
   type = "CLOUD_ARMOR_NETWORK"
-  region = "es-central-1"
 
   ddos_protection_config {
     ddos_protection = "STANDARD"
