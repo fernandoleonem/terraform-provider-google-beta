@@ -193,6 +193,14 @@ func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
+				Config: testAccComputeSecurityPolicy_basicWithCloudArmorNetworkType(spName),
+			},
+			{
+				ResourceName:      "google_compute_security_policy.policy",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
 				Config: testAccComputeSecurityPolicy_withDdosProtectionConfig(spName),
 			},
 			{
