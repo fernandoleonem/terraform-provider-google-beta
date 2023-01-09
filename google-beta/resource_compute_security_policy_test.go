@@ -207,10 +207,11 @@ func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 //ChangeMock
 func testAccComputeSecurityPolicy_withDdosProtectionConfigWithRegionalConfig(spName string) string {
 	return fmt.Sprintf(`
-resource "google_compute_security_policy" "policy" {
+resource "google_compute_security_policy" "default" {
   name        = "%s"
   description = "default rule"
   type = "CLOUD_ARMOR_NETWORK"
+  region = "us-central1"
 
   ddos_protection_config {
     ddos_protection = "STANDARD"
@@ -544,10 +545,11 @@ resource "google_compute_security_policy" "policy" {
 //ChangeMock
 func testAccComputeSecurityPolicy_basicWithCloudArmorNetworkType(spName string) string {
 	return fmt.Sprintf(`
-resource "google_compute_security_policy" "policy" {
+resource "google_compute_security_policy" "default" {
   name        = "%s"
   description = "basic security policy"
   type        = "CLOUD_ARMOR_NETWORK"
+  region = "us-central1"
 }
 `, spName)
 }
