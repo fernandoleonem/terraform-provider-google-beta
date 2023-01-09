@@ -193,37 +193,6 @@ func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccComputeSecurityPolicy_basicWithCloudArmorNetworkTypeWithoutRegion(spName),
-			},
-			{
-				ResourceName:      "google_compute_security_policy.policy",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
-			{
-				Config: testAccComputeSecurityPolicy_withDdosProtectionConfigWithRegionalConfig(spName),
-			},
-			{
-				ResourceName:      "google_compute_security_policy.policy",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
-		},
-	})	
-}
-
-//ChangeTest
-func TestAccComputeSecurityPolicy_withDdosProtectionConfig_withOneStep(t *testing.T) {
-	t.Parallel()
-
-	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
-
-	vcrTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
-		Steps: []resource.TestStep{
-			{
 				Config: testAccComputeSecurityPolicy_withDdosProtectionConfigWithRegionalConfig(spName),
 			},
 			{
@@ -241,7 +210,6 @@ func testAccComputeSecurityPolicy_withDdosProtectionConfigWithRegionalConfig(spN
 resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "default rule"
-  config  = "regional-us-central1"
   type = "CLOUD_ARMOR_NETWORK"
 
   ddos_protection_config {
@@ -575,18 +543,6 @@ resource "google_compute_security_policy" "policy" {
 
 //ChangeMock
 func testAccComputeSecurityPolicy_basicWithCloudArmorNetworkType(spName string) string {
-	return fmt.Sprintf(`
-resource "google_compute_security_policy" "policy" {
-  name        = "%s"
-  description = "basic security policy"
-  type        = "CLOUD_ARMOR_NETWORK"
-  region = "es-central-1"
-}
-`, spName)
-}
-
-//ChangeMock
-func testAccComputeSecurityPolicy_basicWithCloudArmorNetworkTypeWithoutRegion(spName string) string {
 	return fmt.Sprintf(`
 resource "google_compute_security_policy" "policy" {
   name        = "%s"
