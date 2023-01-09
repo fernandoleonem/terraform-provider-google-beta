@@ -31,7 +31,7 @@ func TestAccComputeSecurityPolicy_basic(t *testing.T) {
 	})
 }
 
-//Change
+//ChangeTest
 func TestAccComputeSecurityPolicy_basicWithCloudArmorNetworkType(t *testing.T) {
 	t.Parallel()
 
@@ -44,6 +44,29 @@ func TestAccComputeSecurityPolicy_basicWithCloudArmorNetworkType(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: testAccComputeSecurityPolicy_basicWithCloudArmorNetworkType(spName),
+			},
+			{
+				ResourceName:      "google_compute_security_policy.policy",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
+//ChangeTest
+func TestAccComputeSecurityPolicy_basicWithCloudArmorNetworkTypeWithoutRegion(t *testing.T) {
+	t.Parallel()
+
+	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccComputeSecurityPolicy_basicWithCloudArmorNetworkTypeWithoutRegion(spName),
 			},
 			{
 				ResourceName:      "google_compute_security_policy.policy",
@@ -181,7 +204,7 @@ func TestAccComputeSecurityPolicy_update(t *testing.T) {
 	})
 }
 
-//Change
+//ChangeTest
 func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 	t.Parallel()
 
@@ -193,7 +216,7 @@ func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccComputeSecurityPolicy_basicWithCloudArmorNetworkType(spName),
+				Config: testAccComputeSecurityPolicy_basicWithCloudArmorNetworkTypeWithoutRegion(spName),
 			},
 			{
 				ResourceName:      "google_compute_security_policy.policy",
@@ -209,7 +232,7 @@ func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				Config: testAccComputeSecurityPolicy_basicWithCloudArmorNetworkType(spName),
+				Config: testAccComputeSecurityPolicy_basicWithCloudArmorNetworkTypeWithoutRegion(spName),
 			},
 			{
 				ResourceName:      "google_compute_security_policy.policy",
@@ -220,7 +243,7 @@ func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 	})	
 }
 
-//Change
+//ChangeMock
 func testAccComputeSecurityPolicy_withDdosProtectionConfig(spName string) string {
 	return fmt.Sprintf(`
 resource "google_compute_security_policy" "policy" {
@@ -556,7 +579,7 @@ resource "google_compute_security_policy" "policy" {
 `, spName)
 }
 
-//Change
+//ChangeMock
 func testAccComputeSecurityPolicy_basicWithCloudArmorNetworkType(spName string) string {
 	return fmt.Sprintf(`
 resource "google_compute_security_policy" "policy" {
@@ -564,6 +587,17 @@ resource "google_compute_security_policy" "policy" {
   description = "basic security policy"
   type        = "CLOUD_ARMOR_NETWORK"
   region = "es-central-1"
+}
+`, spName)
+}
+
+//ChangeMock
+func testAccComputeSecurityPolicy_basicWithCloudArmorNetworkTypeWithoutRegion(spName string) string {
+	return fmt.Sprintf(`
+resource "google_compute_security_policy" "policy" {
+  name        = "%s"
+  description = "basic security policy"
+  type        = "CLOUD_ARMOR_NETWORK"
 }
 `, spName)
 }
