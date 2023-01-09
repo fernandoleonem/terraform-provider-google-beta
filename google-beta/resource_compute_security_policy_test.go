@@ -193,7 +193,7 @@ func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccComputeSecurityPolicy_withDdosProtectionConfigWithRegionalConfig(spName),
+				Config: testAccComputeSecurityPolicy_withDdosProtectionConfig(spName),
 			},
 			{
 				ResourceName:      "google_compute_security_policy.policy",
@@ -205,13 +205,24 @@ func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 }
 
 //ChangeMock
-func testAccComputeSecurityPolicy_withDdosProtectionConfigWithRegionalConfig(spName string) string {
+func testAccComputeSecurityPolicy_withDdosProtectionConfig(spName string) string {
 	return fmt.Sprintf(`
 resource "google_compute_security_policy" "default" {
   name        = "%s"
   description = "default rule"
   type = "CLOUD_ARMOR_NETWORK"
-  region = "us-central1"
+  
+  rule {
+    action   = "allow"
+    priority = "2147483647"
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["*"]
+      }
+    }
+    description = "default rule"
+  }
 
   ddos_protection_config {
     ddos_protection = "STANDARD"
@@ -1234,7 +1245,7 @@ resource "google_compute_security_policy" "policy" {
 	name        = "%s"
 
 	rule {
-		action   = "redirect"
+		action   = "redirect"rule
 		priority = "2147483647"
 		match {
 			versioned_expr = "SRC_IPS_V1"
