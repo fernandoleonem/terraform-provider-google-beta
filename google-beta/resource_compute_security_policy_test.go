@@ -54,6 +54,52 @@ func TestAccComputeSecurityPolicy_basicWithCloudArmorNetworkType(t *testing.T) {
 	})
 }
 
+//ChangeTest
+func TestAccComputeSecurityPolicy_basicWithCloudArmorEdgeType(t *testing.T) {
+	t.Parallel()
+
+	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccComputeSecurityPolicy_basicWithCloudArmorEdgeType(spName),
+			},
+			{
+				ResourceName:      "google_compute_security_policy.policy",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
+//ChangeTest
+func TestAccComputeSecurityPolicy_basicWithCloudArmorInternalServiceType(t *testing.T) {
+	t.Parallel()
+
+	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccComputeSecurityPolicy_basicWithCloudArmorInternalServiceType(spName),
+			},
+			{
+				ResourceName:      "google_compute_security_policy.policy",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
 func TestAccComputeSecurityPolicy_withRule(t *testing.T) {
 	t.Parallel()
 
@@ -563,6 +609,30 @@ resource "google_compute_security_policy" "policy" {
 }
 `, spName)
 }
+
+//ChangeMock
+func testAccComputeSecurityPolicy_basicWithCloudArmorEdgeType(spName string) string {
+	return fmt.Sprintf(`
+resource "google_compute_security_policy" "policy" {
+  name        = "%s"
+  description = "basic security policy"
+  type        = "CLOUD_ARMOR_EDGE"
+}
+`, spName)
+}
+
+
+//ChangeMock
+func testAccComputeSecurityPolicy_basicWithCloudArmorInternalServiceType(spName string) string {
+	return fmt.Sprintf(`
+resource "google_compute_security_policy" "policy" {
+  name        = "%s"
+  description = "basic security policy"
+  type        = "CLOUD_ARMOR_INTERNAL_SERVICE"
+}
+`, spName)
+}
+
 
 func testAccComputeSecurityPolicy_withRule(spName string) string {
 	return fmt.Sprintf(`
