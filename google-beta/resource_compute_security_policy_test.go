@@ -208,8 +208,31 @@ func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
+			{
+				Config: testAccComputeSecurityPolicy_basicWithCloudArmorNetworkType(spName),
+			},
+			{
+				ResourceName:      "google_compute_security_policy.policy",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})	
+}
+
+//Change
+func testAccComputeSecurityPolicy_withDdosProtectionConfig(spName string) string {
+	return fmt.Sprintf(`
+resource "google_compute_security_policy" "policy" {
+  name        = "%s"
+  description = "default rule"
+  type = "CLOUD_ARMOR_NETWORK"
+
+  ddos_protection_config {
+    ddos_protection = "STANDARD"
+  }
+}
+`, spName)
 }
 
 func TestAccComputeSecurityPolicy_withAdvancedOptionsConfig(t *testing.T) {
@@ -977,22 +1000,6 @@ resource "google_compute_security_policy" "policy" {
 }
 `, spName)
 }
-
-//Change
-func testAccComputeSecurityPolicy_withDdosProtectionConfig(spName string) string {
-	return fmt.Sprintf(`
-resource "google_compute_security_policy" "policy" {
-  name        = "%s"
-  description = "default rule"
-  type = "CLOUD_ARMOR_NETWORK"
-
-  ddos_protection_config {
-    ddos_protection = "STANDARD"
-  }
-}
-`, spName)
-}
-
 
 func testAccComputeSecurityPolicy_withAdvancedOptionsConfig(spName string) string {
 	return fmt.Sprintf(`
