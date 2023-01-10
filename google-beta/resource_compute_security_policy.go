@@ -401,7 +401,6 @@ func resourceComputeSecurityPolicy() *schema.Resource {
 						"ddos_protection": {
 							Type:         schema.TypeString,
 							Optional:     true,
-							Default:      "STANDARD",//Precisa de um default?
 							ValidateFunc: validation.StringInSlice([]string{"STANDARD", "ADVANCED"}, false),
 							Description:  `DDOS protection. Supported values include: "STANDARD", "ADVANCED".`,
 						},
