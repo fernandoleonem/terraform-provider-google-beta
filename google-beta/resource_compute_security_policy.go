@@ -147,6 +147,7 @@ func resourceComputeSecurityPolicy() *schema.Resource {
 							Description: `A match condition that incoming traffic is evaluated against. If it evaluates to true, the corresponding action is enforced.`,
 						},
 
+						//MarkWaf
 						"preconfigured_waf_config": {
 							Type:     schema.TypeList,
 							Optional: true,
@@ -342,6 +343,7 @@ func resourceComputeSecurityPolicy() *schema.Resource {
 							},
 							Description: `Parameters defining the redirect action. Cannot be specified for any other actions.`,
 						},
+						//MarkHeader
 						"header_action": {
 							Type:        schema.TypeList,
 							Optional:    true,
@@ -849,9 +851,11 @@ func expandSecurityPolicyRule(raw interface{}) *compute.SecurityPolicyRule {
 		Action:                 data["action"].(string),
 		Preview:                data["preview"].(bool),
 		Match:                  expandSecurityPolicyMatch(data["match"].([]interface{})),
+		//MarkWaf
 		PreconfiguredWafConfig: expandSecurityPolicyPreconfiguredWafConfig(data["preconfigured_waf_config"].([]interface{})),
 		RateLimitOptions:       expandSecurityPolicyRuleRateLimitOptions(data["rate_limit_options"].([]interface{})),
 		RedirectOptions:        expandSecurityPolicyRuleRedirectOptions(data["redirect_options"].([]interface{})),
+		//MarkHeader
 		HeaderAction:           expandSecurityPolicyRuleHeaderAction(data["header_action"].([]interface{})),
 		ForceSendFields:        []string{"Description", "Preview"},
 	}
@@ -896,6 +900,7 @@ func expandSecurityPolicyMatchExpr(expr []interface{}) *compute.Expr {
 	}
 }
 
+//MarkWaf
 func expandSecurityPolicyPreconfiguredWafConfig(configured []interface{}) *compute.SecurityPolicyRulePreconfiguredWafConfig {
 	if len(configured) == 0 || configured[0] == nil {
 		return nil
@@ -907,6 +912,7 @@ func expandSecurityPolicyPreconfiguredWafConfig(configured []interface{}) *compu
 	}
 }
 
+//MarkWaf
 func expandSecurityPolicyRulePreconfiguredWafConfigExclusions(configured []interface{}) []*compute.SecurityPolicyRulePreconfiguredWafConfigExclusion {
 	exclusions := make([]*compute.SecurityPolicyRulePreconfiguredWafConfigExclusion, 0, len(configured))
 	for _, raw := range configured {
@@ -915,9 +921,11 @@ func expandSecurityPolicyRulePreconfiguredWafConfigExclusions(configured []inter
 	return exclusions
 }
 
+//MarkWaf
 func expandSecurityPolicyRulePreconfiguredWafConfigExclusion(raw interface{}) *compute.SecurityPolicyRulePreconfiguredWafConfigExclusion {
 	data := raw.(map[string]interface{})
 	return &compute.SecurityPolicyRulePreconfiguredWafConfigExclusion{
+		//MarkWaf
 		RequestHeadersToExclude:     expandSecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams(data["request_header"].([]interface{})),
 		RequestCookiesToExclude:     expandSecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams(data["request_cookie"].([]interface{})),
 		RequestUrisToExclude:        expandSecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams(data["request_uri"].([]interface{})),
@@ -927,6 +935,7 @@ func expandSecurityPolicyRulePreconfiguredWafConfigExclusion(raw interface{}) *c
 	}
 }
 
+//MarkWaf
 func expandSecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams(configured []interface{}) []*compute.SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams {
 	params := make([]*compute.SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams, 0, len(configured))
 	for _, raw := range configured {
@@ -934,6 +943,7 @@ func expandSecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams(configur
 	}
 	return params
 }
+
 
 func expandSecurityPolicyRulePreconfiguredWafConfigExclusionFieldParam(raw interface{}) *compute.SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams {
 	data := raw.(map[string]interface{})
@@ -952,6 +962,7 @@ func flattenSecurityPolicyRules(rules []*compute.SecurityPolicyRule) []map[strin
 			"action":                   rule.Action,
 			"preview":                  rule.Preview,
 			"match":                    flattenMatch(rule.Match),
+			//MarkWaf
 			"preconfigured_waf_config": flattenPreconfiguredWafConfig(rule.PreconfiguredWafConfig),
 			"rate_limit_options":       flattenSecurityPolicyRuleRateLimitOptions(rule.RateLimitOptions),
 			"redirect_options":         flattenSecurityPolicyRedirectOptions(rule.RedirectOptions),
@@ -1004,6 +1015,7 @@ func flattenMatchExpr(match *compute.SecurityPolicyRuleMatcher) []map[string]int
 	return []map[string]interface{}{data}
 }
 
+//MarkWaf
 func flattenPreconfiguredWafConfig(config *compute.SecurityPolicyRulePreconfiguredWafConfig) []map[string]interface{} {
 	if config == nil {
 		return nil
@@ -1016,6 +1028,7 @@ func flattenPreconfiguredWafConfig(config *compute.SecurityPolicyRulePreconfigur
 	return []map[string]interface{}{data}
 }
 
+//MarkWaf
 func flattenPreconfiguredWafConfigExclusions(exclusions []*compute.SecurityPolicyRulePreconfiguredWafConfigExclusion) []map[string]interface{} {
 	exclusionsSchema := make([]map[string]interface{}, 0, len(exclusions))
 	for _, exclusion := range exclusions {
@@ -1033,6 +1046,7 @@ func flattenPreconfiguredWafConfigExclusions(exclusions []*compute.SecurityPolic
 	return exclusionsSchema
 }
 
+//MarkWaf
 func flattenPreconfiguredWafConfigExclusionField(fieldParams []*compute.SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams) []map[string]interface{} {
 	fieldSchema := make([]map[string]interface{}, 0, len(fieldParams))
 	for _, field := range fieldParams {
@@ -1044,6 +1058,7 @@ func flattenPreconfiguredWafConfigExclusionField(fieldParams []*compute.Security
 	}
 	return fieldSchema
 }
+
 //Change
 func expandSecurityPolicyDdosProtectionConfig(configured []interface{}) *compute.SecurityPolicyDdosProtectionConfig {
 	if len(configured) == 0 || configured[0] == nil {
@@ -1281,6 +1296,7 @@ func flattenSecurityPolicyRecaptchaOptionConfig(conf *compute.SecurityPolicyReca
 	return []map[string]interface{}{data}
 }
 
+//MarkHeader
 func expandSecurityPolicyRuleHeaderAction(configured []interface{}) *compute.SecurityPolicyRuleHttpHeaderAction {
 	if len(configured) == 0 || configured[0] == nil {
 		// If header action is unset, return an empty object; this ensures the header action can be cleared
@@ -1294,6 +1310,7 @@ func expandSecurityPolicyRuleHeaderAction(configured []interface{}) *compute.Sec
 	}
 }
 
+//MarkHeader
 func expandSecurityPolicyRequestHeadersToAdds(configured []interface{}) []*compute.SecurityPolicyRuleHttpHeaderActionHttpHeaderOption {
 	transformed := make([]*compute.SecurityPolicyRuleHttpHeaderActionHttpHeaderOption, 0, len(configured))
 
@@ -1304,6 +1321,7 @@ func expandSecurityPolicyRequestHeadersToAdds(configured []interface{}) []*compu
 	return transformed
 }
 
+//MarkHeader
 func expandSecurityPolicyRequestHeader(configured interface{}) *compute.SecurityPolicyRuleHttpHeaderActionHttpHeaderOption {
 	data := configured.(map[string]interface{})
 
@@ -1313,6 +1331,7 @@ func expandSecurityPolicyRequestHeader(configured interface{}) *compute.Security
 	}
 }
 
+//MarkHeader
 func flattenSecurityPolicyRuleHeaderAction(conf *compute.SecurityPolicyRuleHttpHeaderAction) []map[string]interface{} {
 	if conf == nil || conf.RequestHeadersToAdds == nil {
 		return nil
@@ -1325,6 +1344,7 @@ func flattenSecurityPolicyRuleHeaderAction(conf *compute.SecurityPolicyRuleHttpH
 	return []map[string]interface{}{transformed}
 }
 
+//MarkHeader
 func flattenSecurityPolicyRequestHeadersToAdds(conf []*compute.SecurityPolicyRuleHttpHeaderActionHttpHeaderOption) []map[string]interface{} {
 	if conf == nil || len(conf) == 0 {
 		return nil
@@ -1338,6 +1358,7 @@ func flattenSecurityPolicyRequestHeadersToAdds(conf []*compute.SecurityPolicyRul
 	return transformed
 }
 
+//MarkHeader
 func flattenSecurityPolicyRequestHeader(conf *compute.SecurityPolicyRuleHttpHeaderActionHttpHeaderOption) map[string]interface{} {
 	if conf == nil {
 		return nil
