@@ -70,7 +70,6 @@ func testAccComputeSecurityPolicy_withDdosProtectionConfig(spName string) string
 resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "default rule"
-  region = "us-central1"
   type = "CLOUD_ARMOR_NETWORK"
   
   rule {
