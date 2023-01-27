@@ -29,12 +29,75 @@ func TestAccComputeNetworkEdgeSecurityServices_basic(t *testing.T) {
 	})
 }
 
+func TestAccComputeNetworkEdgeSecurityServices_basicTwo(t *testing.T) {
+	t.Parallel()
+
+	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccComputeNetworkEdgeSecurityServices_basicTwo(spName),
+			},
+			{
+				ResourceName:      "google_compute_network_edge_security_services.services",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
+func TestAccComputeNetworkEdgeSecurityServices_basicThree(t *testing.T) {
+	t.Parallel()
+
+	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccComputeNetworkEdgeSecurityServices_basicThree(spName),
+			},
+			{
+				ResourceName:      "google_compute_network_edge_security_services.services",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
 func testAccComputeNetworkEdgeSecurityServices_basic(spName string) string {
 	return fmt.Sprintf(`
 resource "google_compute_network_edge_security_services" "services" {
   name        = "%s"
   description = "basic network edge security services"
-  region = "us-central1"
+}
+`, spName)
+}
+
+func testAccComputeNetworkEdgeSecurityServices_basicTwo(spName string) string {
+	return fmt.Sprintf(`
+resource "google_compute_network_edge_security_services" "services" {
+  name        = "%s"
+  description = "basic network edge security services"
+  security_policy = ""
+}
+`, spName)
+}
+
+func testAccComputeNetworkEdgeSecurityServices_basicThree(spName string) string {
+	return fmt.Sprintf(`
+resource "google_compute_network_edge_security_services" "services" {
+  name        = "%s"
+  description = "basic network edge security services"
+  security_policy = "https://www.google.com/"
 }
 `, spName)
 }
