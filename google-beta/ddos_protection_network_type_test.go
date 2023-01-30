@@ -7,6 +7,27 @@ import (
 )
 
 //ChangeTest
+func TestAccComputeSecurityPolicy_withCloudArmorNetwork_basic(t *testing.T) {
+	t.Parallel()
+
+	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccComputeSecurityPolicy_withCloudArmorNetwork_basic(spName),
+			},
+			{
+				ResourceName:      "google_compute_security_policy.policy",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})	
+}
 func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 	t.Parallel()
 
