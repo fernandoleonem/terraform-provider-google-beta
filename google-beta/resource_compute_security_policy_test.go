@@ -42,7 +42,7 @@ func TestAccComputeSecurityPolicy_basic_withEdge(t *testing.T) {
 		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccComputeSecurityPolicy_basic_withEdge(spName),
+				Config: testAccComputeSecurityPolicy_basic_withNetwork(spName),
 			},
 			{
 				ResourceName:      "google_compute_security_policy.policy",
@@ -496,17 +496,18 @@ func testAccComputeSecurityPolicy_basic(spName string) string {
 resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "basic security policy"
-  type        = "CLOUD_ARMOR_INTERNAL_SERVICE"
+  type        = "CLOUD_ARMOR"
 }
 `, spName)
 }
 
-func testAccComputeSecurityPolicy_basic_withEdge(spName string) string {
+func testAccComputeSecurityPolicy_basic_withNetwork(spName string) string {
 	return fmt.Sprintf(`
 resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "basic security policy"
-  type        = "CLOUD_ARMOR_EDGE"
+  type        = "CLOUD_ARMOR_NETWORK"
+  region = "us-central1"
 }
 `, spName)
 }
