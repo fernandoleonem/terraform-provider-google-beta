@@ -474,7 +474,7 @@ func testAccComputeSecurityPolicy_basic(spName string) string {
 resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "basic security policy"
-  type        = "CLOUD_ARMOR"
+  type        = "CLOUD_ARMOR_NETWORK"
 }
 `, spName)
 }
