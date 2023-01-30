@@ -474,8 +474,17 @@ func testAccComputeSecurityPolicy_basic(spName string) string {
 resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "basic security policy"
-  type        = "CLOUD_ARMOR_NETWORK"
-  region = "us-central1"
+  type        = "CLOUD_ARMOR_INTERNAL_SERVICE"
+}
+`, spName)
+}
+
+func testAccComputeSecurityPolicy_basic_withEdge(spName string) string {
+	return fmt.Sprintf(`
+resource "google_compute_security_policy" "policy" {
+  name        = "%s"
+  description = "basic security policy"
+  type        = "CLOUD_ARMOR_EDGE"
 }
 `, spName)
 }
