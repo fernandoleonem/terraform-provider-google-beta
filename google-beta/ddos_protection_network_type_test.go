@@ -60,7 +60,7 @@ resource "google_compute_security_policy" "policy" {
   rule {
     action   = "deny-502"
     priority = "2147483647"
-	
+
 	match {
 		versioned_expr = "SRC_IPS_V1"
 		config {
@@ -77,6 +77,10 @@ resource "google_compute_security_policy" "policy" {
 		versioned_expr = "SRC_IPS_V1"
 		config {
 		  src_ip_ranges = ["192.0.2.0/24"]
+		}
+		expr {
+			expression = "us-central1"
+			location = "us-central1"
 		}
 	  }
   }
@@ -101,6 +105,11 @@ resource "google_compute_security_policy" "policy" {
       config {
         src_ip_ranges = ["*"]
       }
+	  expr {
+		expression = "us-central1"
+		location = "us-central1"
+	}
+	  
     }
     description = "default rule"
   }
