@@ -80,7 +80,6 @@ resource "google_compute_security_policy" "policy" {
 		}
 		expr {
 			expression = "us-central1"
-			location = "us-central1"
 		}
 	  }
   }
@@ -107,7 +106,6 @@ resource "google_compute_security_policy" "policy" {
       }
 	  expr {
 		expression = "us-central1"
-		location = "us-central1"
 	}
 	  
     }
