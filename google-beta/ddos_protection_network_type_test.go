@@ -52,7 +52,7 @@ func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 
 func testAccComputeSecurityPolicy_withCloudArmorNetwork_basic(spName string) string {
 	return fmt.Sprintf(`
-resource "google_compute_security_policy" "policy" {
+resource "google_compute_security_policy" "regional" {
   name        = "%s"
   description = "policy for internal test users"
   type = "CLOUD_ARMOR_NETWORK"
@@ -97,19 +97,30 @@ resource "google_compute_security_policy" "policy" {
   type = "CLOUD_ARMOR_NETWORK"
   
   rule {
-    action   = "allow"
+    action   = "deny-502"
     priority = "2147483647"
-    match {
-      versioned_expr = "SRC_IPS_V1"
-      config {
-        src_ip_ranges = ["*"]
-      }
-	  expr {
-		expression = "us-central1"
-	}
-	  
-    }
-    description = "default rule"
+
+	match {
+		versioned_expr = "SRC_IPS_V1"
+		config {
+		  src_ip_ranges = ["*"]
+		}
+	  }
+  }
+
+  rule {
+    action   = "allow"
+    priority = "1000"
+	description = "allow traffic from 192.0.2.0/24"
+	match {
+		versioned_expr = "SRC_IPS_V1"
+		config {
+		  src_ip_ranges = ["192.0.2.0/24"]
+		}
+		expr {
+			expression = "us-central1"
+		}
+	  }
   }
 
   ddos_protection_config {
