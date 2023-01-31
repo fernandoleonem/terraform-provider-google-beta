@@ -134,10 +134,10 @@ func resourceComputeSecurityPolicy() *schema.Resource {
 												// 	Type:     schema.TypeString,
 												// 	Optional: true,
 												// },
-												"location": {
-													Type:     schema.TypeString,
-													Optional: true,
-												},
+												//"location": {
+												//	Type:     schema.TypeString,
+												//	Optional: true,
+												//},
 											},
 										},
 										Description: `User defined CEVAL expression. A CEVAL expression is used to specify match criteria such as origin.ip, source.region_code and contents in the request header.`,
@@ -896,8 +896,7 @@ func expandSecurityPolicyMatchExpr(expr []interface{}) *compute.Expr {
 		// These fields are not yet supported  (Issue hashicorp/terraform-provider-google#4497: mbang)
 		// Title:       data["title"].(string),
 		// Description: data["description"].(string),
-		//Remove
-		Location:    data["location"].(string),
+		//Location:    data["location"].(string),
 	}
 }
 
@@ -1010,8 +1009,7 @@ func flattenMatchExpr(match *compute.SecurityPolicyRuleMatcher) []map[string]int
 		// These fields are not yet supported (Issue hashicorp/terraform-provider-google#4497: mbang)
 		// "title":       match.Expr.Title,
 		// "description": match.Expr.Description,
-		//Remove
-		"location":    match.Expr.Location,
+		//"location":    match.Expr.Location,
 	}
 
 	return []map[string]interface{}{data}

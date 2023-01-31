@@ -79,8 +79,7 @@ resource "google_compute_security_policy" "policy" {
 		  src_ip_ranges = ["192.0.2.0/24"]
 		}
 		expr {
-			expression = "US"
-			location = "us-central1"
+			expression = "us-central1"
 		}
 	  }
   }
@@ -106,8 +105,7 @@ resource "google_compute_security_policy" "policy" {
         src_ip_ranges = ["*"]
       }
 	  expr {
-		expression = "US"
-		location = "us-central1"
+		expression = "us-central1"
 	}
 	  
     }
