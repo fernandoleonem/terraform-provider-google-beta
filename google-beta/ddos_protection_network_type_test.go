@@ -46,6 +46,14 @@ func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
+			{
+				Config: testAccComputeSecurityPolicy_withDdosProtectionConfig_update(spName),
+			},
+			{
+				ResourceName:      "google_compute_security_policy.policy",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})	
 }
@@ -129,3 +137,45 @@ resource "google_compute_security_policy" "policy" {
 }
 `, spName)
 }
+
+func testAccComputeSecurityPolicy_withDdosProtectionConfig_update(spName string) string {
+	return fmt.Sprintf(`
+resource "google_compute_security_policy" "policy" {
+  name        = "%s"
+  description = "default rule"
+  type = "CLOUD_ARMOR_NETWORK"
+  
+  rule {
+    action   = "deny-502"
+    priority = "2147483647"
+
+	match {
+		versioned_expr = "SRC_IPS_V1"
+		config {
+		  src_ip_ranges = ["*"]
+		}
+	  }
+  }
+
+  rule {
+    action   = "allow"
+    priority = "1000"
+	description = "allow traffic from 192.0.2.0/24"
+	match {
+		versioned_expr = "SRC_IPS_V1"
+		config {
+		  src_ip_ranges = ["192.0.2.0/24"]
+		}
+		expr {
+			expression = "us-central1"
+		}
+	  }
+  }
+
+  ddos_protection_config {
+    ddos_protection = "ADVANCED"
+  }
+}
+`, spName)
+}
+
