@@ -11,7 +11,8 @@ func TestAccComputeNetworkEdgeSecurityServices_basic(t *testing.T) {
 	t.Parallel()
 
 	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
-	polName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+	//polName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+	fmt.Println(spName)
 
 	vcrTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -19,10 +20,10 @@ func TestAccComputeNetworkEdgeSecurityServices_basic(t *testing.T) {
 		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccComputeNetworkEdgeSecurityServices_basic(spName, polName),
+				Config: testAccComputeNetworkEdgeSecurityServices_basic(spName),
 			},
 			{
-				ResourceName:      "google_compute_network_edge_security_services.services",
+				ResourceName:      "google_compute_network_edge_security_services.primary",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -30,52 +31,11 @@ func TestAccComputeNetworkEdgeSecurityServices_basic(t *testing.T) {
 	})
 }
 
-func testAccComputeNetworkEdgeSecurityServices_basic(spName, polName string) string {
+func testAccComputeNetworkEdgeSecurityServices_basic(spName string) string {
 	return fmt.Sprintf(`
-resource "google_compute_network_edge_security_services" "services" {
+resource "google_compute_network_edge_security_services" "primary" {
   name        = "%s"
   description = "basic network edge security services"
 }
-
-resource "google_compute_security_policy" "policy" {
-	name        = "%s"
-	description = "default rule"
-	type = "CLOUD_ARMOR_NETWORK"
-	
-	rule {
-	  action   = "deny-502"
-	  priority = "2147483647"
-  
-	  match {
-		  versioned_expr = "SRC_IPS_V1"
-		  config {
-			src_ip_ranges = ["*"]
-		  }
-		}
-	}
-  
-	rule {
-	  action   = "allow"
-	  priority = "1000"
-	  description = "allow traffic from 198.51.100.0/24"
-	  match {
-		  versioned_expr = "SRC_IPS_V1"
-		  config {
-			src_ip_ranges = ["198.51.100.0/24"]
-		  }
-		}
-	}
-  
-	ddos_protection_config {
-	  ddos_protection = "STANDARD"
-	}
-  
-	adaptive_protection_config {
-	  layer_7_ddos_defense_config {
-		enable = true
-		rule_visibility = "STANDARD"
-	  }
-	}
-  }
-`, spName, polName)
+`, spName)
 }
