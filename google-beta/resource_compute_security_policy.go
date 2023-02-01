@@ -45,15 +45,6 @@ func resourceComputeSecurityPolicy() *schema.Resource {
 				Description: `An optional description of this security policy. Max size is 2048.`,
 			},
 
-			//ChangeRegion
-			"region": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Optional:    true,
-				ForceNew:    true,
-				Description: `The region of the dataset. eg us-central1`,
-			},
-
 			"project": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -572,11 +563,6 @@ func resourceComputeSecurityPolicyCreate(d *schema.ResourceData, meta interface{
 		Description: d.Get("description").(string),
 	}
 
-	//ChangeRegion
-	if v, ok := d.GetOk("region"); ok {
-		securityPolicy.Region = v.(string)
-	}
-
 	if v, ok := d.GetOk("type"); ok {
 		securityPolicy.Type = v.(string)
 	}
@@ -650,10 +636,6 @@ func resourceComputeSecurityPolicyRead(d *schema.ResourceData, meta interface{})
 	if err := d.Set("name", securityPolicy.Name); err != nil {
 		return fmt.Errorf("Error setting name: %s", err)
 	}
-	//ChangeRegion
-	if err := d.Set("region", securityPolicy.Region); err != nil {
-		return fmt.Errorf("Error setting region: %s", err)
-	}
 	if err := d.Set("description", securityPolicy.Description); err != nil {
 		return fmt.Errorf("Error setting description: %s", err)
 	}
@@ -718,12 +700,6 @@ func resourceComputeSecurityPolicyUpdate(d *schema.ResourceData, meta interface{
 		securityPolicy.Description = d.Get("description").(string)
 		securityPolicy.ForceSendFields = append(securityPolicy.ForceSendFields, "Description")
 	}
-	//ChangeRegion
-	if d.HasChange("region") {
-		securityPolicy.Region = d.Get("region").(string)
-		securityPolicy.ForceSendFields = append(securityPolicy.ForceSendFields, "Region")
-	}
-
 	//Change
 	if d.HasChange("ddos_protection_config") {
 		securityPolicy.DdosProtectionConfig = expandSecurityPolicyDdosProtectionConfig(d.Get("ddos_protection_config").([]interface{}))
