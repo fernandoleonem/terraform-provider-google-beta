@@ -63,7 +63,7 @@ func testAccComputeSecurityPolicy_withDdosProtectionConfig(spName string) string
 resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "default rule"
-  type = "CLOUD_ARMOR_NETWORK"
+  type = "CLOUD_ARMOR"
   
   rule {
     action   = "deny-502"
@@ -104,7 +104,7 @@ func testAccComputeSecurityPolicy_withDdosProtectionConfig_update(spName string)
 resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "default rule"
-  type = "CLOUD_ARMOR_NETWORK"
+  type = "CLOUD_ARMOR"
   
   rule {
     action   = "deny-502"
@@ -145,7 +145,7 @@ func testAccComputeSecurityPolicy_withCloudArmorNetwork_basic(spName string) str
 resource "google_compute_security_policy" "regional" {
   name        = "%s"
   description = "policy for internal test users"
-  type = "CLOUD_ARMOR_NETWORK"
+  type = "CLOUD_ARMOR"
   
   rule {
     action   = "deny-502"
