@@ -49,7 +49,7 @@ func resourceComputeNetworkEdgeSecurityServices() *schema.Resource {
 
 			"region": {
 				Type:             schema.TypeString,
-				Required:         true,
+				Optional:         true,
 				ForceNew:         true,
 				DiffSuppressFunc: compareSelfLinkOrResourceName,
 				Description:      `URL of the region where the resource resides. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.`,
