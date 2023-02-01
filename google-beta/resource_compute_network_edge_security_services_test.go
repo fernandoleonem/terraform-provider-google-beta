@@ -36,7 +36,6 @@ func testAccComputeNetworkEdgeSecurityServices_basic(spName string) string {
 resource "google_compute_network_edge_security_services" "policy" {
   name        = "%s"
   description = "basic network edge security services"
-  region = "us-central1"
 }
 `, spName)
 }
