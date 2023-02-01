@@ -73,6 +73,13 @@ resource "google_compute_security_policy" "policy" {
   ddos_protection_config {
     ddos_protection = "STANDARD"
   }
+
+  adaptive_protection_config {
+    layer_7_ddos_defense_config {
+      enable = true
+      rule_visibility = "STANDARD"
+	}
+  }
 }
 `, spName)
 }
@@ -113,6 +120,13 @@ resource "google_compute_security_policy" "policy" {
 
   ddos_protection_config {
     ddos_protection = "ADVANCED"
+  }
+
+  adaptive_protection_config {
+    layer_7_ddos_defense_config {
+      enable = true
+      rule_visibility = "STANDARD"
+	}
   }
 }
 `, spName)
