@@ -47,6 +47,14 @@ func resourceComputeNetworkEdgeSecurityServices() *schema.Resource {
 				Description: `Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a NetworkEdgeSecurityService.`,
 			},
 
+			"region": {
+				Type:             schema.TypeString,
+				Required:         true,
+				ForceNew:         true,
+				DiffSuppressFunc: compareSelfLinkOrResourceName,
+				Description:      `URL of the region where the resource resides. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.`,
+			},
+
 			"security_policy": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -84,6 +92,10 @@ func resourceComputeNetworkEdgeSecurityServicesCreate(d *schema.ResourceData, me
 
 	if v, ok := d.GetOk("security_policy"); ok {
 		networkEdgeSecurityServices.SecurityPolicy = v.(string)
+	}
+
+	if v, ok := d.GetOk("region"); ok {
+		networkEdgeSecurityServices.Region = v.(string)
 	}
 
 	log.Printf("[DEBUG] NetworkEdgeSecurityService insert request: %#v", networkEdgeSecurityServices)
@@ -145,6 +157,9 @@ func resourceComputeNetworkEdgeSecurityServicesRead(d *schema.ResourceData, meta
 	if err := d.Set("fingerprint", networkEdgeSecurityServices.Fingerprint); err != nil {
 		return fmt.Errorf("Error setting fingerprint: %s", err)
 	}
+	if err := d.Set("region", networkEdgeSecurityServices.Region); err != nil {
+		return fmt.Errorf("Error setting region: %s", err)
+	}
 	if err := d.Set("security_policy", networkEdgeSecurityServices.SecurityPolicy); err != nil {
 		return fmt.Errorf("Error setting security policy: %s", err)
 	}
@@ -178,6 +193,11 @@ func resourceComputeNetworkEdgeSecurityServicesUpdate(d *schema.ResourceData, me
 	if d.HasChange("description") {
 		networkEdgeSecurityServices.Description = d.Get("description").(string)
 		networkEdgeSecurityServices.ForceSendFields = append(networkEdgeSecurityServices.ForceSendFields, "Description")
+	}
+
+	if d.HasChange("region") {
+		networkEdgeSecurityServices.SecurityPolicy = d.Get("region").(string)
+		networkEdgeSecurityServices.ForceSendFields = append(networkEdgeSecurityServices.ForceSendFields, "Region")
 	}
 
 	if d.HasChange("security_policy") {
