@@ -95,7 +95,6 @@ resource "google_compute_security_policy" "regional" {
 `, spName)
 }
 
-
 //ChangeMock
 func testAccComputeSecurityPolicy_withDdosProtectionConfig(spName string) string {
 	return fmt.Sprintf(`
@@ -103,6 +102,7 @@ resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "default rule"
   type = "CLOUD_ARMOR_NETWORK"
+  location = "us-central1"
   
   rule {
     action   = "deny-502"
@@ -144,6 +144,7 @@ resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "default rule"
   type = "CLOUD_ARMOR_NETWORK"
+  location = "us-central1"
   
   rule {
     action   = "deny-502"
