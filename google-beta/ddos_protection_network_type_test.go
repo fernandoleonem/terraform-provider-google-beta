@@ -42,7 +42,6 @@ resource "google_compute_security_policy" "policy" {
   name        = "%s"
   description = "default rule"
   type = "CLOUD_ARMOR_NETWORK"
-  region = "us-central1"
   
   rule {
     action   = "deny-502"
