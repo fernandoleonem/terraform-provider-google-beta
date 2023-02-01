@@ -42,11 +42,11 @@ func TestAccComputeNetworkEdgeSecurityServices_basic_withBucketImage_realTest(t 
 func TestAccComputeNetworkEdgeSecurityServices_basic_withDdos_realTest(t *testing.T) {
 	t.Parallel()
 
-	//bucketName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+	bucketName := fmt.Sprintf("tf-test-%s", randString(t, 10))
 	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
 	polName := fmt.Sprintf("tf-test-%s", randString(t, 10))
-	polDdosLink := "google_compute_security_policy.policy.ddos_protection_config" 
-	//polLink := "google_compute_security_policy.policy.self_link"
+	//polDdosLink := "google_compute_security_policy.policy.ddos_protection_config" 
+	polLink := "google_compute_security_policy.policy.self_link"
 
 	vcrTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -54,7 +54,7 @@ func TestAccComputeNetworkEdgeSecurityServices_basic_withDdos_realTest(t *testin
 		CheckDestroy: testAccCheckComputeBackendServiceDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccComputeNetworkEdgeSecurityServices_basic_withDdos(spName, polName, polDdosLink),
+				Config: testAccComputeNetworkEdgeSecurityServices_basic_withDdos(bucketName, polLink, spName, polName),
 			},
 			{
 				ResourceName:      "google_compute_backend_bucket.image_backend",
@@ -64,7 +64,6 @@ func TestAccComputeNetworkEdgeSecurityServices_basic_withDdos_realTest(t *testin
 		},
 	})
 }
-
 
 func testAccComputeNetworkEdgeSecurityServices_basic_withBucketImage(bucketName, polName, polLink string) string {
 	return fmt.Sprintf(`
@@ -90,12 +89,25 @@ resource "google_compute_security_policy" "policy" {
 `, bucketName, polLink, bucketName, polName)
 }
 
-func testAccComputeNetworkEdgeSecurityServices_basic_withDdos(spName, polName, polDdosLink string) string {
+func testAccComputeNetworkEdgeSecurityServices_basic_withDdos(bucketName, polLink, spName, polName string) string {
 	return fmt.Sprintf(`
-resource "google_compute_network_edge_security_services" "services" {
+resource "google_compute_backend_bucket" "image_backend" {
+	name        = "%s"
+	description = "Contains beautiful images"
+	bucket_name = google_storage_bucket.image_bucket.name
+	enable_cdn  = true
+	edge_security_policy = %s
+  }
+  
+  resource "google_storage_bucket" "image_bucket" {
+	name     = "%s"
+	location = "EU"
+  }
+
+  resource "google_compute_network_edge_security_services" "services" {
 	name        = "%s"
 	description = "basic network edge security services"
-	security_policy = "%s"
+	security_policy = ""
 }
 	  
 resource "google_compute_security_policy" "policy" {
@@ -103,5 +115,5 @@ resource "google_compute_security_policy" "policy" {
   description = "basic security policy"
   type = "CLOUD_ARMOR_NETWORK"
 }
-`, spName, polDdosLink, polName) 
+`, bucketName, polLink, bucketName, spName, polName) 
 }
