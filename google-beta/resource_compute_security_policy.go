@@ -395,7 +395,6 @@ func resourceComputeSecurityPolicy() *schema.Resource {
 			"ddos_protection_config": {
 				Type:        schema.TypeList,
 				Optional:    true,
-				Computed:    true,
 				Description: `Ddos Protection Config of this security policy.`,
 				MaxItems:    1,
 				Elem: &schema.Resource{
