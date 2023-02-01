@@ -20,7 +20,7 @@ func TestAccComputeNetworkEdgeSecurityServices_basic_withBucketImage_realTest(t 
 		CheckDestroy: testAccCheckComputeBackendServiceDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccComputeNetworkEdgeSecurityServices_basic_withBucketImage(bucketName, polName, "google_compute_security_policy.policy.self_link"),
+				Config: testAccComputeNetworkEdgeSecurityServices_basic_withBucketImage(bucketName, polName, "google_compute_security_policy.policy.id"),
 			},
 			{
 				ResourceName:      "google_compute_backend_bucket.image_backend",
@@ -45,8 +45,8 @@ func TestAccComputeNetworkEdgeSecurityServices_basic_withDdos_realTest(t *testin
 	bucketName := fmt.Sprintf("tf-test-%s", randString(t, 10))
 	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
 	polName := fmt.Sprintf("tf-test-%s", randString(t, 10))
-	polLinkAll := "google_compute_security_policy.policy" 
-	polLink := "google_compute_security_policy.policy.self_link"
+	polLinkAll := "google_compute_security_policy.policy.id" 
+	polLink := "google_compute_security_policy.policy.id"
 
 	vcrTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
