@@ -41,6 +41,22 @@ resource "google_compute_network_edge_security_services" "services" {
 
 resource "google_compute_security_policy" "policy" {
 	name        = "%s"
+	description = "basic security policy"
+	type = "CLOUD_ARMOR_NETWORK"
+}
+`, spName, polLink, polName)
+}
+
+func testAccComputeNetworkEdgeSecurityServices_withDdos(spName, polName, polLink string) string {
+	return fmt.Sprintf(`
+resource "google_compute_network_edge_security_services" "services" {
+  name        = "%s"
+  description = "basic network edge security services"
+  security_policy = "%s"
+}
+
+resource "google_compute_security_policy" "policy" {
+	name        = "%s"
 	description = "default rule"
 	type = "CLOUD_ARMOR_NETWORK"
 	
