@@ -30,7 +30,7 @@ func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				Config: testAccComputeSecurityPolicy_withNetworkEdgeSecurityServices(spName, polName, polLink),
+				Config: testAccComputeSecurityPolicy_withDdosProtectionConfig_update(spName),
 			},
 			{
 				ResourceName:      "google_compute_security_policy.policy",

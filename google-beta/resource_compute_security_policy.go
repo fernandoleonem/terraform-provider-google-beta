@@ -395,6 +395,7 @@ func resourceComputeSecurityPolicy() *schema.Resource {
 			"ddos_protection_config": {
 				Type:        schema.TypeList,
 				Optional:    true,
+				Computed:     true,
 				Description: `Ddos Protection Config of this security policy.`,
 				MaxItems:    1,
 				Elem: &schema.Resource{
@@ -402,7 +403,7 @@ func resourceComputeSecurityPolicy() *schema.Resource {
 						"ddos_protection": {
 							Type:         schema.TypeString,
 							Optional:     true,
-							Default:      "STANDARD",
+							Computed:     true,
 							ValidateFunc: validation.StringInSlice([]string{"STANDARD", "ADVANCED"}, false),
 							Description:  `DDOS protection. Supported values include: "STANDARD", "ADVANCED".`,
 						},

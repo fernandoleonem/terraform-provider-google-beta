@@ -12,7 +12,7 @@ func TestAccComputeNetworkEdgeSecurityServices_basic_withDdos_realTest(t *testin
 	t.Parallel()
 
 	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
-	polLink := "google_compute_security_policy.policy.self_link"
+	polLink := "google_compute_security_policy.policy.ddos_protection_config.ddos_protection"
 	polName := fmt.Sprintf("tf-test-%s", randString(t, 10))
 
 	vcrTest(t, resource.TestCase{
