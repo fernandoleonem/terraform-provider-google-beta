@@ -44,7 +44,7 @@ resource "google_compute_security_policy" "policy" {
   type = "CLOUD_ARMOR_NETWORK"
   
   rule {
-    action   = "deny-404"
+    action   = "deny-502"
     priority = "2147483647"
 
 	match {
@@ -58,11 +58,11 @@ resource "google_compute_security_policy" "policy" {
   rule {
     action   = "allow"
     priority = "1000"
-	description = "allow traffic from 192.0.2.0/24"
+	description = "allow traffic from 198.51.100.0/24"
 	match {
 		versioned_expr = "SRC_IPS_V1"
 		config {
-		  src_ip_ranges = ["192.0.2.0/24"]
+		  src_ip_ranges = ["198.51.100.0/24"]
 		}
 	  }
   }
@@ -89,7 +89,7 @@ resource "google_compute_security_policy" "policy" {
   type = "CLOUD_ARMOR_NETWORK"
   
   rule {
-    action   = "deny-404"
+    action   = "deny-502"
     priority = "2147483647"
 
 	match {
@@ -103,11 +103,11 @@ resource "google_compute_security_policy" "policy" {
   rule {
     action   = "allow"
     priority = "1000"
-	description = "allow traffic from 192.0.2.0/24"
+	description = "allow traffic from 198.51.100.0/24"
 	match {
 		versioned_expr = "SRC_IPS_V1"
 		config {
-		  src_ip_ranges = ["192.0.2.0/24"]
+		  src_ip_ranges = ["198.51.100.0/24"]
 		}
 	  }
   }
