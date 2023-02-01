@@ -1067,7 +1067,6 @@ func expandSecurityPolicyDdosProtectionConfig(configured []interface{}) *compute
 	data := configured[0].(map[string]interface{})
 	return &compute.SecurityPolicyDdosProtectionConfig {
 		DdosProtection:  data["ddos_protection"].(string),
-		ForceSendFields: []string{"Enable"},
 	}
 }
 //Change
