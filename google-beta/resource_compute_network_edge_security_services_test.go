@@ -23,7 +23,7 @@ func TestAccComputeNetworkEdgeSecurityServices_basic(t *testing.T) {
 				Config: testAccComputeNetworkEdgeSecurityServices_basic(spName),
 			},
 			{
-				ResourceName:      "google_compute_network_edge_security_services.primary",
+				ResourceName:      "google_compute_network_edge_security_services.policy",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -33,9 +33,10 @@ func TestAccComputeNetworkEdgeSecurityServices_basic(t *testing.T) {
 
 func testAccComputeNetworkEdgeSecurityServices_basic(spName string) string {
 	return fmt.Sprintf(`
-resource "google_compute_network_edge_security_services" "primary" {
+resource "google_compute_network_edge_security_services" "policy" {
   name        = "%s"
   description = "basic network edge security services"
+  region = "us-central1"
 }
 `, spName)
 }
