@@ -40,7 +40,6 @@ resource "google_compute_network_edge_security_services" "services" {
 resource "google_compute_security_policy" "policy" {
 	name        = "%s"
 	description = "default rule"
-	region = "us-central1"
 	type = "CLOUD_ARMOR_NETWORK"
 	
 	rule {
