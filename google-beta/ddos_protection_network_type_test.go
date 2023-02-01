@@ -10,6 +10,11 @@ func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 	t.Parallel()
 
 	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+	polName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+	polLink := "google_compute_security_policy.policy.self_link"
+
+	fmt.Println(polName)
+	fmt.Println(polLink)
 
 	vcrTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -25,7 +30,7 @@ func TestAccComputeSecurityPolicy_withDdosProtectionConfig(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				Config: testAccComputeSecurityPolicy_withDdosProtectionConfig_update(spName),
+				Config: testAccComputeSecurityPolicy_withNetworkEdgeSecurityServices(spName, polName, polLink),
 			},
 			{
 				ResourceName:      "google_compute_security_policy.policy",
@@ -124,4 +129,48 @@ resource "google_compute_security_policy" "policy" {
   }
 }
 `, spName)
+}
+
+func testAccComputeSecurityPolicy_withNetworkEdgeSecurityServices(spName, polName, polLink string) string {
+	return fmt.Sprintf(`
+resource "google_compute_network_edge_security_services" "services" {
+  name        = "%s"
+  description = "basic network edge security services"
+  security_policy = "%s"
+}
+
+resource "google_compute_security_policy" "policy" {
+	name        = "%s"
+	description = "default rule"
+	type = "CLOUD_ARMOR_NETWORK"
+	
+	rule {
+	  action   = "deny-502"
+	  priority = "2147483647"
+  
+	  match {
+		  versioned_expr = "SRC_IPS_V1"
+		  config {
+			src_ip_ranges = ["*"]
+		  }
+		}
+	}
+  
+	rule {
+	  action   = "allow"
+	  priority = "1000"
+	  description = "allow traffic from 198.51.100.0/24"
+	  match {
+		  versioned_expr = "SRC_IPS_V1"
+		  config {
+			src_ip_ranges = ["198.51.100.0/24"]
+		  }
+		}
+	}
+  
+	ddos_protection_config {
+	  ddos_protection = "ADVANCED"
+	}
+  }
+`, spName, polLink, polName)
 }

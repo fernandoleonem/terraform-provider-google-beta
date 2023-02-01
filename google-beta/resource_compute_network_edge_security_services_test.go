@@ -20,10 +20,10 @@ func TestAccComputeNetworkEdgeSecurityServices_basic(t *testing.T) {
 		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccComputeNetworkEdgeSecurityServices_basic(spName, polName, "google_compute_security_policy.policy.self_link"),
+				Config: testAccComputeNetworkEdgeSecurityServices_basic(spName, polName, ""),
 			},
 			{
-				ResourceName:      "google_compute_network_edge_security_services.policy",
+				ResourceName:      "google_compute_network_edge_security_services.services",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -33,7 +33,7 @@ func TestAccComputeNetworkEdgeSecurityServices_basic(t *testing.T) {
 
 func testAccComputeNetworkEdgeSecurityServices_basic(spName, polName, polLink string) string {
 	return fmt.Sprintf(`
-resource "google_compute_network_edge_security_services" "policy" {
+resource "google_compute_network_edge_security_services" "services" {
   name        = "%s"
   description = "basic network edge security services"
   security_policy = "%s"
@@ -70,13 +70,6 @@ resource "google_compute_security_policy" "policy" {
   
 	ddos_protection_config {
 	  ddos_protection = "ADVANCED"
-	}
-  
-	adaptive_protection_config {
-	  layer_7_ddos_defense_config {
-		enable = true
-		rule_visibility = "STANDARD"
-	  }
 	}
   }
 `, spName, polLink, polName)
