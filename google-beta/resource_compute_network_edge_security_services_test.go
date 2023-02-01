@@ -45,7 +45,7 @@ func TestAccComputeNetworkEdgeSecurityServices_basic_withDdos_realTest(t *testin
 	bucketName := fmt.Sprintf("tf-test-%s", randString(t, 10))
 	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
 	polName := fmt.Sprintf("tf-test-%s", randString(t, 10))
-	//polDdosLink := "google_compute_security_policy.policy.ddos_protection_config" 
+	polLinkAll := "google_compute_security_policy.policy" 
 	polLink := "google_compute_security_policy.policy.self_link"
 
 	vcrTest(t, resource.TestCase{
@@ -54,7 +54,7 @@ func TestAccComputeNetworkEdgeSecurityServices_basic_withDdos_realTest(t *testin
 		CheckDestroy: testAccCheckComputeBackendServiceDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccComputeNetworkEdgeSecurityServices_basic_withDdos(bucketName, polLink, spName, polName),
+				Config: testAccComputeNetworkEdgeSecurityServices_basic_withDdos(bucketName, polLink, spName, polName, polLinkAll),
 			},
 			{
 				ResourceName:      "google_compute_backend_bucket.image_backend",
@@ -89,7 +89,7 @@ resource "google_compute_security_policy" "policy" {
 `, bucketName, polLink, bucketName, polName)
 }
 
-func testAccComputeNetworkEdgeSecurityServices_basic_withDdos(bucketName, polLink, spName, polName string) string {
+func testAccComputeNetworkEdgeSecurityServices_basic_withDdos(bucketName, polLink, spName, polName, polLinkAll string) string {
 	return fmt.Sprintf(`
 resource "google_compute_backend_bucket" "image_backend" {
 	name        = "%s"
@@ -107,7 +107,7 @@ resource "google_compute_backend_bucket" "image_backend" {
   resource "google_compute_network_edge_security_services" "services" {
 	name        = "%s"
 	description = "basic network edge security services"
-	security_policy = ""
+	security_policy = "%s"
 }
 	  
 resource "google_compute_security_policy" "policy" {
@@ -115,5 +115,5 @@ resource "google_compute_security_policy" "policy" {
   description = "basic security policy"
   type = "CLOUD_ARMOR_NETWORK"
 }
-`, bucketName, polLink, bucketName, spName, polName) 
+`, bucketName, polLink, bucketName, spName, polLinkAll, polName) 
 }
