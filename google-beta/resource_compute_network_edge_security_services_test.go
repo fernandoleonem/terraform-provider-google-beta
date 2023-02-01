@@ -7,23 +7,31 @@ import (
 )
 
 //Change
-func TestAccComputeNetworkEdgeSecurityServices_basic(t *testing.T) {
+
+func TestAccComputeNetworkEdgeSecurityServices_basic_withBucketImage_realTest(t *testing.T) {
 	t.Parallel()
 
-	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+	bucketName := fmt.Sprintf("tf-test-%s", randString(t, 10))
 	polName := fmt.Sprintf("tf-test-%s", randString(t, 10))
-	fmt.Println(spName)
 
 	vcrTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckComputeSecurityPolicyDestroyProducer(t),
+		CheckDestroy: testAccCheckComputeBackendServiceDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccComputeNetworkEdgeSecurityServices_basic(spName, polName, ""),
+				Config: testAccComputeNetworkEdgeSecurityServices_basic_withBucketImage(bucketName, polName, "google_compute_security_policy.policy.self_link"),
 			},
 			{
-				ResourceName:      "google_compute_network_edge_security_services.services",
+				ResourceName:      "google_compute_backend_bucket.image_backend",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
+				Config: testAccComputeNetworkEdgeSecurityServices_basic_withBucketImage(bucketName, polName, "\"\""),
+			},
+			{
+				ResourceName:      "google_compute_backend_bucket.image_backend",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -31,62 +39,69 @@ func TestAccComputeNetworkEdgeSecurityServices_basic(t *testing.T) {
 	})
 }
 
-func testAccComputeNetworkEdgeSecurityServices_basic(spName, polName, polLink string) string {
-	return fmt.Sprintf(`
-resource "google_compute_network_edge_security_services" "services" {
-  name        = "%s"
-  description = "basic network edge security services"
-  security_policy = "%s"
+func TestAccComputeNetworkEdgeSecurityServices_basic_withDdos_realTest(t *testing.T) {
+	t.Parallel()
+
+	//bucketName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+	spName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+	polName := fmt.Sprintf("tf-test-%s", randString(t, 10))
+	polDdosLink := "google_compute_security_policy.policy.ddos_protection_config" 
+	//polLink := "google_compute_security_policy.policy.self_link"
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckComputeBackendServiceDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccComputeNetworkEdgeSecurityServices_basic_withDdos(spName, polName, polDdosLink),
+			},
+			{
+				ResourceName:      "google_compute_backend_bucket.image_backend",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
 }
+
+
+func testAccComputeNetworkEdgeSecurityServices_basic_withBucketImage(bucketName, polName, polLink string) string {
+	return fmt.Sprintf(`
+resource "google_compute_backend_bucket" "image_backend" {
+  name        = "%s"
+  description = "Contains beautiful images"
+  bucket_name = google_storage_bucket.image_bucket.name
+  enable_cdn  = true
+  edge_security_policy = %s
+}
+
+resource "google_storage_bucket" "image_bucket" {
+  name     = "%s"
+  location = "EU"
+}
+
 
 resource "google_compute_security_policy" "policy" {
-	name        = "%s"
-	description = "basic security policy"
-	type = "CLOUD_ARMOR_NETWORK"
+  name        = "%s"
+  description = "basic security policy"
+  type = "CLOUD_ARMOR_NETWORK"
 }
-`, spName, polLink, polName)
+`, bucketName, polLink, bucketName, polName)
 }
 
-func testAccComputeNetworkEdgeSecurityServices_withDdos(spName, polName, polLink string) string {
+func testAccComputeNetworkEdgeSecurityServices_basic_withDdos(spName, polName, polDdosLink string) string {
 	return fmt.Sprintf(`
 resource "google_compute_network_edge_security_services" "services" {
-  name        = "%s"
-  description = "basic network edge security services"
-  security_policy = "%s"
-}
-
-resource "google_compute_security_policy" "policy" {
 	name        = "%s"
-	description = "default rule"
-	type = "CLOUD_ARMOR_NETWORK"
-	
-	rule {
-	  action   = "deny-502"
-	  priority = "2147483647"
-  
-	  match {
-		  versioned_expr = "SRC_IPS_V1"
-		  config {
-			src_ip_ranges = ["*"]
-		  }
-		}
-	}
-  
-	rule {
-	  action   = "allow"
-	  priority = "1000"
-	  description = "allow traffic from 198.51.100.0/24"
-	  match {
-		  versioned_expr = "SRC_IPS_V1"
-		  config {
-			src_ip_ranges = ["198.51.100.0/24"]
-		  }
-		}
-	}
-  
-	ddos_protection_config {
-	  ddos_protection = "ADVANCED"
-	}
-  }
-`, spName, polLink, polName)
+	description = "basic network edge security services"
+	security_policy = "%s"
+}
+	  
+resource "google_compute_security_policy" "policy" {
+  name        = "%s"
+  description = "basic security policy"
+  type = "CLOUD_ARMOR_NETWORK"
+}
+`, spName, polDdosLink, polName) 
 }
