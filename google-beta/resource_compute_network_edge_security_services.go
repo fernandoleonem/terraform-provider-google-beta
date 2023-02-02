@@ -2,13 +2,14 @@ package google
 
 import (
 	"fmt"
-	"log"
-	"time"
 	"github.com/hashicorp/errwrap"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	compute "google.golang.org/api/compute/v0.beta"
+	"log"
+	"time"
 )
-//Change
+
+// Change
 func resourceComputeNetworkEdgeSecurityServices() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceComputeNetworkEdgeSecurityServicesCreate,
@@ -47,23 +48,16 @@ func resourceComputeNetworkEdgeSecurityServices() *schema.Resource {
 				Description: `Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a NetworkEdgeSecurityService.`,
 			},
 
-			/*"region": {
-				Type:             schema.TypeString,
-				Optional:         true,
-				ForceNew:         true,
-				DiffSuppressFunc: compareSelfLinkOrResourceName,
-				Description:      `URL of the region where the resource resides. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.`,
-			},*/
-
 			"security_policy": {
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
+				ForceNew:    true,
 				Description: `The resource URL for the network edge security service associated with this network edge security service.`,
 			},
 		},
 
 		UseJSONNumber: true,
-	}	
+	}
 }
 
 func resourceComputeNetworkEdgeSecurityServicesCreate(d *schema.ResourceData, meta interface{}) error {
@@ -93,10 +87,6 @@ func resourceComputeNetworkEdgeSecurityServicesCreate(d *schema.ResourceData, me
 	if v, ok := d.GetOk("security_policy"); ok {
 		networkEdgeSecurityServices.SecurityPolicy = v.(string)
 	}
-
-	/*if v, ok := d.GetOk("region"); ok {
-		networkEdgeSecurityServices.Region = v.(string)
-	}*/
 
 	log.Printf("[DEBUG] NetworkEdgeSecurityService insert request: %#v", networkEdgeSecurityServices)
 
@@ -157,9 +147,6 @@ func resourceComputeNetworkEdgeSecurityServicesRead(d *schema.ResourceData, meta
 	if err := d.Set("fingerprint", networkEdgeSecurityServices.Fingerprint); err != nil {
 		return fmt.Errorf("Error setting fingerprint: %s", err)
 	}
-	/*if err := d.Set("region", networkEdgeSecurityServices.Region); err != nil {
-		return fmt.Errorf("Error setting region: %s", err)
-	}*/
 	if err := d.Set("security_policy", networkEdgeSecurityServices.SecurityPolicy); err != nil {
 		return fmt.Errorf("Error setting security policy: %s", err)
 	}
@@ -195,11 +182,6 @@ func resourceComputeNetworkEdgeSecurityServicesUpdate(d *schema.ResourceData, me
 		networkEdgeSecurityServices.ForceSendFields = append(networkEdgeSecurityServices.ForceSendFields, "Description")
 	}
 
-	/*if d.HasChange("region") {
-		networkEdgeSecurityServices.SecurityPolicy = d.Get("region").(string)
-		networkEdgeSecurityServices.ForceSendFields = append(networkEdgeSecurityServices.ForceSendFields, "Region")
-	}*/
-
 	if d.HasChange("security_policy") {
 		networkEdgeSecurityServices.SecurityPolicy = d.Get("security_policy").(string)
 		networkEdgeSecurityServices.ForceSendFields = append(networkEdgeSecurityServices.ForceSendFields, "SecurityPolicy")
@@ -221,7 +203,7 @@ func resourceComputeNetworkEdgeSecurityServicesUpdate(d *schema.ResourceData, me
 	}
 
 	return resourceComputeNetworkEdgeSecurityServicesRead(d, meta)
-}	
+}
 
 func resourceComputeNetworkEdgeSecurityServicesDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)

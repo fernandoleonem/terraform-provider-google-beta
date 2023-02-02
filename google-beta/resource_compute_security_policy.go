@@ -54,10 +54,10 @@ func resourceComputeSecurityPolicy() *schema.Resource {
 			},
 
 			"type": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				Computed:     true,
-				Description:  `The type indicates the intended use of the security policy. CLOUD_ARMOR - Cloud Armor backend security policies can be configured to filter incoming HTTP requests targeting backend services. They filter requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud Armor edge security policies can be configured to filter incoming HTTP requests targeting backend services (including Cloud CDN-enabled) as well as backend buckets (Cloud Storage). They filter requests before the request is served from Google's cache.`,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: `The type indicates the intended use of the security policy. CLOUD_ARMOR - Cloud Armor backend security policies can be configured to filter incoming HTTP requests targeting backend services. They filter requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud Armor edge security policies can be configured to filter incoming HTTP requests targeting backend services (including Cloud CDN-enabled) as well as backend buckets (Cloud Storage). They filter requests before the request is served from Google's cache.`,
 				//Change
 				//SetFeature: Cloud Armor for NLB/VMs APIs (item c) -> insert CLOUD_ARMOR_NETWORK on enum
 				ValidateFunc: validation.StringInSlice([]string{"CLOUD_ARMOR", "CLOUD_ARMOR_EDGE", "CLOUD_ARMOR_INTERNAL_SERVICE", "CLOUD_ARMOR_NETWORK"}, false),
@@ -395,7 +395,7 @@ func resourceComputeSecurityPolicy() *schema.Resource {
 			"ddos_protection_config": {
 				Type:        schema.TypeList,
 				Optional:    true,
-				Computed:     true,
+				Computed:    true,
 				Description: `Ddos Protection Config of this security policy.`,
 				MaxItems:    1,
 				Elem: &schema.Resource{
@@ -845,18 +845,18 @@ func expandSecurityPolicyRules(configured []interface{}) []*compute.SecurityPoli
 func expandSecurityPolicyRule(raw interface{}) *compute.SecurityPolicyRule {
 	data := raw.(map[string]interface{})
 	return &compute.SecurityPolicyRule{
-		Description:            data["description"].(string),
-		Priority:               int64(data["priority"].(int)),
-		Action:                 data["action"].(string),
-		Preview:                data["preview"].(bool),
-		Match:                  expandSecurityPolicyMatch(data["match"].([]interface{})),
+		Description: data["description"].(string),
+		Priority:    int64(data["priority"].(int)),
+		Action:      data["action"].(string),
+		Preview:     data["preview"].(bool),
+		Match:       expandSecurityPolicyMatch(data["match"].([]interface{})),
 		//MarkWaf
 		PreconfiguredWafConfig: expandSecurityPolicyPreconfiguredWafConfig(data["preconfigured_waf_config"].([]interface{})),
 		RateLimitOptions:       expandSecurityPolicyRuleRateLimitOptions(data["rate_limit_options"].([]interface{})),
 		RedirectOptions:        expandSecurityPolicyRuleRedirectOptions(data["redirect_options"].([]interface{})),
 		//MarkHeader
-		HeaderAction:           expandSecurityPolicyRuleHeaderAction(data["header_action"].([]interface{})),
-		ForceSendFields:        []string{"Description", "Preview"},
+		HeaderAction:    expandSecurityPolicyRuleHeaderAction(data["header_action"].([]interface{})),
+		ForceSendFields: []string{"Description", "Preview"},
 	}
 }
 
@@ -899,7 +899,7 @@ func expandSecurityPolicyMatchExpr(expr []interface{}) *compute.Expr {
 	}
 }
 
-//MarkWaf
+// MarkWaf
 func expandSecurityPolicyPreconfiguredWafConfig(configured []interface{}) *compute.SecurityPolicyRulePreconfiguredWafConfig {
 	if len(configured) == 0 || configured[0] == nil {
 		return nil
@@ -911,7 +911,7 @@ func expandSecurityPolicyPreconfiguredWafConfig(configured []interface{}) *compu
 	}
 }
 
-//MarkWaf
+// MarkWaf
 func expandSecurityPolicyRulePreconfiguredWafConfigExclusions(configured []interface{}) []*compute.SecurityPolicyRulePreconfiguredWafConfigExclusion {
 	exclusions := make([]*compute.SecurityPolicyRulePreconfiguredWafConfigExclusion, 0, len(configured))
 	for _, raw := range configured {
@@ -920,7 +920,7 @@ func expandSecurityPolicyRulePreconfiguredWafConfigExclusions(configured []inter
 	return exclusions
 }
 
-//MarkWaf
+// MarkWaf
 func expandSecurityPolicyRulePreconfiguredWafConfigExclusion(raw interface{}) *compute.SecurityPolicyRulePreconfiguredWafConfigExclusion {
 	data := raw.(map[string]interface{})
 	return &compute.SecurityPolicyRulePreconfiguredWafConfigExclusion{
@@ -934,7 +934,7 @@ func expandSecurityPolicyRulePreconfiguredWafConfigExclusion(raw interface{}) *c
 	}
 }
 
-//MarkWaf
+// MarkWaf
 func expandSecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams(configured []interface{}) []*compute.SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams {
 	params := make([]*compute.SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams, 0, len(configured))
 	for _, raw := range configured {
@@ -942,7 +942,6 @@ func expandSecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams(configur
 	}
 	return params
 }
-
 
 func expandSecurityPolicyRulePreconfiguredWafConfigExclusionFieldParam(raw interface{}) *compute.SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams {
 	data := raw.(map[string]interface{})
@@ -956,11 +955,11 @@ func flattenSecurityPolicyRules(rules []*compute.SecurityPolicyRule) []map[strin
 	rulesSchema := make([]map[string]interface{}, 0, len(rules))
 	for _, rule := range rules {
 		data := map[string]interface{}{
-			"description":              rule.Description,
-			"priority":                 rule.Priority,
-			"action":                   rule.Action,
-			"preview":                  rule.Preview,
-			"match":                    flattenMatch(rule.Match),
+			"description": rule.Description,
+			"priority":    rule.Priority,
+			"action":      rule.Action,
+			"preview":     rule.Preview,
+			"match":       flattenMatch(rule.Match),
 			//MarkWaf
 			"preconfigured_waf_config": flattenPreconfiguredWafConfig(rule.PreconfiguredWafConfig),
 			"rate_limit_options":       flattenSecurityPolicyRuleRateLimitOptions(rule.RateLimitOptions),
@@ -1014,7 +1013,7 @@ func flattenMatchExpr(match *compute.SecurityPolicyRuleMatcher) []map[string]int
 	return []map[string]interface{}{data}
 }
 
-//MarkWaf
+// MarkWaf
 func flattenPreconfiguredWafConfig(config *compute.SecurityPolicyRulePreconfiguredWafConfig) []map[string]interface{} {
 	if config == nil {
 		return nil
@@ -1027,7 +1026,7 @@ func flattenPreconfiguredWafConfig(config *compute.SecurityPolicyRulePreconfigur
 	return []map[string]interface{}{data}
 }
 
-//MarkWaf
+// MarkWaf
 func flattenPreconfiguredWafConfigExclusions(exclusions []*compute.SecurityPolicyRulePreconfiguredWafConfigExclusion) []map[string]interface{} {
 	exclusionsSchema := make([]map[string]interface{}, 0, len(exclusions))
 	for _, exclusion := range exclusions {
@@ -1045,7 +1044,7 @@ func flattenPreconfiguredWafConfigExclusions(exclusions []*compute.SecurityPolic
 	return exclusionsSchema
 }
 
-//MarkWaf
+// MarkWaf
 func flattenPreconfiguredWafConfigExclusionField(fieldParams []*compute.SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams) []map[string]interface{} {
 	fieldSchema := make([]map[string]interface{}, 0, len(fieldParams))
 	for _, field := range fieldParams {
@@ -1058,18 +1057,19 @@ func flattenPreconfiguredWafConfigExclusionField(fieldParams []*compute.Security
 	return fieldSchema
 }
 
-//Change
+// Change
 func expandSecurityPolicyDdosProtectionConfig(configured []interface{}) *compute.SecurityPolicyDdosProtectionConfig {
 	if len(configured) == 0 || configured[0] == nil {
 		return nil
 	}
 
 	data := configured[0].(map[string]interface{})
-	return &compute.SecurityPolicyDdosProtectionConfig {
-		DdosProtection:  data["ddos_protection"].(string),
+	return &compute.SecurityPolicyDdosProtectionConfig{
+		DdosProtection: data["ddos_protection"].(string),
 	}
 }
-//Change
+
+// Change
 func flattenSecurityPolicyDdosProtectionConfig(conf *compute.SecurityPolicyDdosProtectionConfig) []map[string]interface{} {
 	if conf == nil {
 		return nil
@@ -1294,7 +1294,7 @@ func flattenSecurityPolicyRecaptchaOptionConfig(conf *compute.SecurityPolicyReca
 	return []map[string]interface{}{data}
 }
 
-//MarkHeader
+// MarkHeader
 func expandSecurityPolicyRuleHeaderAction(configured []interface{}) *compute.SecurityPolicyRuleHttpHeaderAction {
 	if len(configured) == 0 || configured[0] == nil {
 		// If header action is unset, return an empty object; this ensures the header action can be cleared
@@ -1308,7 +1308,7 @@ func expandSecurityPolicyRuleHeaderAction(configured []interface{}) *compute.Sec
 	}
 }
 
-//MarkHeader
+// MarkHeader
 func expandSecurityPolicyRequestHeadersToAdds(configured []interface{}) []*compute.SecurityPolicyRuleHttpHeaderActionHttpHeaderOption {
 	transformed := make([]*compute.SecurityPolicyRuleHttpHeaderActionHttpHeaderOption, 0, len(configured))
 
@@ -1319,7 +1319,7 @@ func expandSecurityPolicyRequestHeadersToAdds(configured []interface{}) []*compu
 	return transformed
 }
 
-//MarkHeader
+// MarkHeader
 func expandSecurityPolicyRequestHeader(configured interface{}) *compute.SecurityPolicyRuleHttpHeaderActionHttpHeaderOption {
 	data := configured.(map[string]interface{})
 
@@ -1329,7 +1329,7 @@ func expandSecurityPolicyRequestHeader(configured interface{}) *compute.Security
 	}
 }
 
-//MarkHeader
+// MarkHeader
 func flattenSecurityPolicyRuleHeaderAction(conf *compute.SecurityPolicyRuleHttpHeaderAction) []map[string]interface{} {
 	if conf == nil || conf.RequestHeadersToAdds == nil {
 		return nil
@@ -1342,7 +1342,7 @@ func flattenSecurityPolicyRuleHeaderAction(conf *compute.SecurityPolicyRuleHttpH
 	return []map[string]interface{}{transformed}
 }
 
-//MarkHeader
+// MarkHeader
 func flattenSecurityPolicyRequestHeadersToAdds(conf []*compute.SecurityPolicyRuleHttpHeaderActionHttpHeaderOption) []map[string]interface{} {
 	if conf == nil || len(conf) == 0 {
 		return nil
@@ -1356,7 +1356,7 @@ func flattenSecurityPolicyRequestHeadersToAdds(conf []*compute.SecurityPolicyRul
 	return transformed
 }
 
-//MarkHeader
+// MarkHeader
 func flattenSecurityPolicyRequestHeader(conf *compute.SecurityPolicyRuleHttpHeaderActionHttpHeaderOption) map[string]interface{} {
 	if conf == nil {
 		return nil

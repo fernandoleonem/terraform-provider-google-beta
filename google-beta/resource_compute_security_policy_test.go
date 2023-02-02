@@ -639,7 +639,7 @@ resource "google_compute_security_policy" "policy" {
 `, spName)
 }
 
-//MarkWaf
+// MarkWaf
 func testAccComputeSecurityPolicy_withPreconfiguredWafConfig(spName string) string {
 	return fmt.Sprintf(`
 resource "google_compute_security_policy" "policy" {
@@ -706,7 +706,7 @@ resource "google_compute_security_policy" "policy" {
 `, spName)
 }
 
-//MarkWaf
+// MarkWaf
 func testAccComputeSecurityPolicy_withPreconfiguredWafConfig_update(spName string) string {
 	return fmt.Sprintf(`
 resource "google_compute_security_policy" "policy" {
@@ -766,7 +766,7 @@ resource "google_compute_security_policy" "policy" {
 `, spName)
 }
 
-//MarkWaf
+// MarkWaf
 func testAccComputeSecurityPolicy_withPreconfiguredWafConfig_clear(spName string) string {
 	return fmt.Sprintf(`
 resource "google_compute_security_policy" "policy" {
