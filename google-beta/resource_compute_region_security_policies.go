@@ -27,35 +27,6 @@ func resourceComputeRegionSecurityPolicies() *schema.Resource {
 			Delete: schema.DefaultTimeout(4 * time.Minute),
 		},
 
-		Schema: map[string]*schema.Schema{
-			"name": {
-				Type:         schema.TypeString,
-				Required:     true,
-				ForceNew:     true,
-				ValidateFunc: validateGCEName,
-				Description:  `Name of the resource. Provided by the client when the resource is created.`,
-			},
-
-			"description": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: `An optional description of this resource. Provide this property when you create the resource.`,
-			},
-
-			"fingerprint": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: `Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a NetworkEdgeSecurityService.`,
-			},
-
-			"security_policy": {
-				Type:        schema.TypeString,
-				Required:    true,
-				ForceNew:    true,
-				Description: `The resource URL for the network edge security service associated with this network edge security service.`,
-			},
-		},
-
 		UseJSONNumber: true,
 	}
 }
