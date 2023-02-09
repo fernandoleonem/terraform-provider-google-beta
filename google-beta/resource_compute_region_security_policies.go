@@ -10,12 +10,12 @@ import (
 )
 
 // Change
-func resourceComputeNetworkEdgeSecurityServices() *schema.Resource {
+func resourceComputeRegionSecurityPolicies() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceComputeNetworkEdgeSecurityServicesCreate,
-		Read:   resourceComputeNetworkEdgeSecurityServicesRead,
-		Update: resourceComputeNetworkEdgeSecurityServicesUpdate,
-		Delete: resourceComputeNetworkEdgeSecurityServicesDelete,
+		Create: resourceComputeRegionSecurityPoliciesCreate,
+		Read:   resourceComputeRegionSecurityPoliciesRead,
+		Update: resourceComputeRegionSecurityPoliciesUpdate,
+		Delete: resourceComputeRegionSecurityPoliciesDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceNetworkEdgeSecurityServicesImporter,
@@ -60,7 +60,7 @@ func resourceComputeNetworkEdgeSecurityServices() *schema.Resource {
 	}
 }
 
-func resourceComputeNetworkEdgeSecurityServicesCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceComputeRegionSecurityPoliciesCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
 	userAgent, err := generateUserAgentString(d, config.userAgent)
@@ -79,40 +79,35 @@ func resourceComputeNetworkEdgeSecurityServicesCreate(d *schema.ResourceData, me
 	}
 
 	sp := d.Get("name").(string)
-	networkEdgeSecurityServices := &compute.NetworkEdgeSecurityService{
-		Name:        sp,
-		Description: d.Get("description").(string),
-	}
 
-	if v, ok := d.GetOk("security_policy"); ok {
-		networkEdgeSecurityServices.SecurityPolicy = v.(string)
-	}
+	regionSecurityPolicies := &compute.RegionSecurityPoliciesService{}
+	securityPolicy := &compute.SecurityPolicy{}
 
-	log.Printf("[DEBUG] NetworkEdgeSecurityService insert request: %#v", networkEdgeSecurityServices)
+	log.Printf("[DEBUG] RegionSecurityPolicies insert request: %#v", regionSecurityPolicies)
 
 	client := config.NewComputeClient(userAgent)
 
-	op, err := client.NetworkEdgeSecurityServices.Insert(project, region, networkEdgeSecurityServices).Do()
+	op, err := client.RegionSecurityPolicies.Insert(project, region, securityPolicy).Do()
 
 	if err != nil {
-		return errwrap.Wrapf("Error creating NetworkEdgeSecurityService: {{err}}", err)
+		return errwrap.Wrapf("Error creating RegionSecurityPolicies: {{err}}", err)
 	}
 
-	id, err := replaceVars(d, config, "projects/{{project}}/global/networkEdgeSecurityServices/{{name}}")
+	id, err := replaceVars(d, config, "projects/{{project}}/global/regionSecurityPolicies/{{name}}")
 	if err != nil {
 		return fmt.Errorf("Error constructing id: %s", err)
 	}
 	d.SetId(id)
 
-	err = computeOperationWaitTime(config, op, project, fmt.Sprintf("Creating NetworkEdgeSecurityService %q", sp), userAgent, d.Timeout(schema.TimeoutCreate))
+	err = computeOperationWaitTime(config, op, project, fmt.Sprintf("Creating RegionSecurityPolicies %q", sp), userAgent, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return err
 	}
 
-	return resourceComputeNetworkEdgeSecurityServicesRead(d, meta)
+	return resourceComputeRegionSecurityPoliciesRead(d, meta)
 }
 
-func resourceComputeNetworkEdgeSecurityServicesRead(d *schema.ResourceData, meta interface{}) error {
+func resourceComputeRegionSecurityPoliciesRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
@@ -133,28 +128,25 @@ func resourceComputeNetworkEdgeSecurityServicesRead(d *schema.ResourceData, meta
 
 	client := config.NewComputeClient(userAgent)
 
-	networkEdgeSecurityServices, err := client.NetworkEdgeSecurityServices.Get(project, region, sp).Do()
+	regionSecurityPolicies, err := client.RegionSecurityPolicies.Get(project, region, sp).Do()
 	if err != nil {
-		return handleNotFoundError(err, d, fmt.Sprintf("NetworkEdgeSecurityServices %q", d.Id()))
+		return handleNotFoundError(err, d, fmt.Sprintf("RegionSecurityPolicies %q", d.Id()))
 	}
 
-	if err := d.Set("name", networkEdgeSecurityServices.Name); err != nil {
+	if err := d.Set("name", regionSecurityPolicies.Name); err != nil {
 		return fmt.Errorf("Error setting name: %s", err)
 	}
-	if err := d.Set("description", networkEdgeSecurityServices.Description); err != nil {
+	/*if err := d.Set("description", regionSecurityPolicies.Description); err != nil {
 		return fmt.Errorf("Error setting description: %s", err)
 	}
-	if err := d.Set("fingerprint", networkEdgeSecurityServices.Fingerprint); err != nil {
+	if err := d.Set("fingerprint", regionSecurityPolicies.Fingerprint); err != nil {
 		return fmt.Errorf("Error setting fingerprint: %s", err)
-	}
-	if err := d.Set("security_policy", networkEdgeSecurityServices.SecurityPolicy); err != nil {
-		return fmt.Errorf("Error setting security policy: %s", err)
-	}
+	}*/
 
 	return nil
 }
 
-func resourceComputeNetworkEdgeSecurityServicesUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceComputeRegionSecurityPoliciesUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
@@ -173,11 +165,10 @@ func resourceComputeNetworkEdgeSecurityServicesUpdate(d *schema.ResourceData, me
 
 	sp := d.Get("name").(string)
 
-	networkEdgeSecurityServices := &compute.NetworkEdgeSecurityService{
-		Fingerprint: d.Get("fingerprint").(string),
-	}
+	//regionSecurityPolicies := &compute.RegionSecurityPoliciesService{}
+	securityPolicy := &compute.SecurityPolicy{}
 
-	if d.HasChange("description") {
+	/*if d.HasChange("description") {
 		networkEdgeSecurityServices.Description = d.Get("description").(string)
 		networkEdgeSecurityServices.ForceSendFields = append(networkEdgeSecurityServices.ForceSendFields, "Description")
 	}
@@ -185,27 +176,30 @@ func resourceComputeNetworkEdgeSecurityServicesUpdate(d *schema.ResourceData, me
 	if d.HasChange("security_policy") {
 		networkEdgeSecurityServices.SecurityPolicy = d.Get("security_policy").(string)
 		networkEdgeSecurityServices.ForceSendFields = append(networkEdgeSecurityServices.ForceSendFields, "SecurityPolicy")
+	}*/
+
+	/*if len(regionSecurityPolicies.ForceSendFields) > 0 {
+
+	}*/
+
+	client := config.NewComputeClient(userAgent)
+
+	op, err := client.RegionSecurityPolicies.Patch(project, region, sp, securityPolicy).Do()
+
+	if err != nil {
+		return errwrap.Wrapf(fmt.Sprintf("Error updating RegionSecurityPolicies %q: {{err}}", sp), err)
 	}
 
-	if len(networkEdgeSecurityServices.ForceSendFields) > 0 {
-		client := config.NewComputeClient(userAgent)
+	err = computeOperationWaitTime(config, op, project, fmt.Sprintf("Updating RegionSecurityPolicies %q", sp), userAgent, d.Timeout(schema.TimeoutUpdate))
 
-		op, err := client.NetworkEdgeSecurityServices.Patch(project, region, sp, networkEdgeSecurityServices).Do()
-
-		if err != nil {
-			return errwrap.Wrapf(fmt.Sprintf("Error updating NetworkEdgeSecurityServices %q: {{err}}", sp), err)
-		}
-
-		err = computeOperationWaitTime(config, op, project, fmt.Sprintf("Updating NetworkEdgeSecurityServices %q", sp), userAgent, d.Timeout(schema.TimeoutUpdate))
-		if err != nil {
-			return err
-		}
+	if err != nil {
+		return err
 	}
 
-	return resourceComputeNetworkEdgeSecurityServicesRead(d, meta)
+	return resourceComputeRegionSecurityPoliciesRead(d, meta)
 }
 
-func resourceComputeNetworkEdgeSecurityServicesDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceComputeRegionSecurityPoliciesDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
@@ -225,12 +219,12 @@ func resourceComputeNetworkEdgeSecurityServicesDelete(d *schema.ResourceData, me
 	client := config.NewComputeClient(userAgent)
 
 	// Delete the SecurityPolicy
-	op, err := client.NetworkEdgeSecurityServices.Delete(project, region, d.Get("name").(string)).Do()
+	op, err := client.RegionSecurityPolicies.Delete(project, region, d.Get("name").(string)).Do()
 	if err != nil {
-		return errwrap.Wrapf("Error deleting NetworkEdgeSecurityServices: {{err}}", err)
+		return errwrap.Wrapf("Error deleting RegionSecurityPolicies: {{err}}", err)
 	}
 
-	err = computeOperationWaitTime(config, op, project, "Deleting NetworkEdgeSecurityServices", userAgent, d.Timeout(schema.TimeoutDelete))
+	err = computeOperationWaitTime(config, op, project, "Deleting RegionSecurityPolicies", userAgent, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return err
 	}
@@ -239,14 +233,14 @@ func resourceComputeNetworkEdgeSecurityServicesDelete(d *schema.ResourceData, me
 	return nil
 }
 
-func resourceNetworkEdgeSecurityServicesImporter(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceComputeRegionSecurityPoliciesImporter(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	config := meta.(*Config)
-	if err := parseImportId([]string{"projects/(?P<project>[^/]+)/global/networkEdgeSecurityServices/(?P<name>[^/]+)", "(?P<project>[^/]+)/(?P<name>[^/]+)", "(?P<name>[^/]+)"}, d, config); err != nil {
+	if err := parseImportId([]string{"projects/(?P<project>[^/]+)/global/regionSecurityPolicies/(?P<name>[^/]+)", "(?P<project>[^/]+)/(?P<name>[^/]+)", "(?P<name>[^/]+)"}, d, config); err != nil {
 		return nil, err
 	}
 
 	// Replace import id for the resource id
-	id, err := replaceVars(d, config, "projects/{{project}}/global/networkEdgeSecurityServices/{{name}}")
+	id, err := replaceVars(d, config, "projects/{{project}}/global/regionSecurityPolicies/{{name}}")
 	if err != nil {
 		return nil, fmt.Errorf("Error constructing id: %s", err)
 	}
